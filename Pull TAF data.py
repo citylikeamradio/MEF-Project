@@ -11,9 +11,11 @@ import openpyxl                           #openpxl for python excel connection
 import requests                           #requests for web crawling 
 import bs4                                #beautiful soup for html crawling
 
+
 icao = raw_input('Enter an ICAO: ')           #asks user for icao - todo: pull from spreadsheet error check icao len/avail
 tafurl = 'https://www.aviationweather.gov/taf/data?ids=' + icao +'&format=raw&metars=off&layout=off' #builds url from user input 
 icaonameurl = 'http://www.airnav.com/airport/' + icao
+
 
 gettaf = requests.get(tafurl)                    #saves website data
 geticaoname = requests.get(icaonameurl)
@@ -30,7 +32,8 @@ q2 = q.find('-')
 q3 = q.find('/')
 totalicaoname = (q[(q2+2):(q3-1)])
 
-tafline = ' ' 
+
+tafline = '' 
 totaltaf = ''
 for tafline in extractedtaf.strings:          #breaks into strings & saves formatted taf to variable
     totaltaf += (tafline + '''
@@ -44,6 +47,17 @@ sheet['A1'] = (totalicaoname)
 sheet['A2'] = (totaltaf)                             #writes taf variable to specific shell in sheet
 excelfile.save(n)                                    #saves the sheet
 
+import re
 
-print(totalicaoname)                                      #print for peace of mind
-print(totaltaf)
+stringtaf = ''
+ss = re.split(r'\s+',totaltaf)
+for x in ss:
+    stringtaf += (x + ' ')
+stringtaf = stringtaf.encode('utf-8')
+
+
+print(totalicaoname) 
+print(totaltaf)                                     #print for peace of mind
+print(type(totaltaf))
+print(stringtaf)
+print(type(stringtaf))
