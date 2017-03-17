@@ -109,33 +109,28 @@ init = np.array(init, dtype = np.int64)
 froms = np.array(froms, dtype = np.int64)
 time = becomings + tempos + init + froms
 
+for i, line in enumerate(linetaf):
+    splitline = re.split(r'\s+', line)
+    for j,group in enumerate(splitline):
+        if group.endswith('KT'):                       #check wind groups
+            if group.startswith('WS'):                   #pull out wind shear
+                WSheight = 100*int(group[2:5])
+                WSdir = int(group[6:9])
+                WSspeed = int(group[9:11])
+                print(time[i])
+                print('HAZARD: WIND SHEAR CONDITIONS- {0}FT FROM {1} DEGREES AT {2}KT'.format(WSheight,WSdir,WSspeed))
+            else:
+                wind = int(group[-4:-2])                 #check wind thresholds
+                if wind >= 25 and wind < 35:
+                    print('From {0}:'.format(time[i]))
+                    print('HAZARD: SFC WIND 25-34KT')
+                elif wind >= 35 and wind < 50:
+                    print('From {0}:'.format(time[i]))
+                    print('HAZARD: SFC WIND 35-49KT')
+                elif wind >= 50:
+                    print('From {0}:'.format(time[i]))
+                    print('HAZARD: SFC WIND >50KT')
 
-
-#for i,line in enumerate(linetaf):    
-#    if linetaf.endswith('KT'):                       #check wind groups
-#        if linetaf.startswith('WS'):                   #pull out wind shear
-#            WSheight = 100*int(linetaf[2:5])
-#            WSdir = int(linetaf[6:9])
-#            WSspeed = int(linetaf[9:11])
-#            print()
-#            print('HAZARD: WIND SHEAR CONDITIONS- {0}FT FROM {1} DEGREES AT {2}KT'.format(WSheight,WSdir,WSspeed))
-#        else:
-#            wind = int(y[-4:-2])                 #check wind thresholds
-#            if wind >= 25 and wind < 35:
-#                print('From {0}/{1}Z'.format(date, time))
-#                print('HAZARD: SFC WIND 25-34KT')
-#            elif wind >= 35 and wind < 50:
-#                print('From {0}/{1}Z'.format(date, time))
-#                print('HAZARD: SFC WIND 35-49KT')
-#            elif wind >= 50:
-#                print('From {0}/{1}Z'.format(date, time))
-#                print('HAZARD: SFC WIND >50KT')
-        
-
-
-#for y in listtaf:                                #loop through listtaf
-
-#    
 
 #print(linetaf)
 #print(totalicaoname) 
@@ -149,4 +144,4 @@ print(totaltaf)                                     #print for peace of mind
 #print(froms)
 #print(becomings)
 #print(tempos)
-print(time)
+#print(time)
