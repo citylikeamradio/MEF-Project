@@ -28,27 +28,22 @@ icaoname = bs4.BeautifulSoup(geticaoname.text,'lxml')
 extractedtaf = taf.body.code                     #pulls the taf text within <code>
 extractedicaoname = icaoname.title
 
+#####################################
+# RETRIEVE ICAO DESCRIPTION ############# UPDATE
 
 q = str(extractedicaoname)
 q2 = q.find('-')
 q3 = q.find('/')
 totalicaoname = (q[(q2+2):(q3-1)])
 
+#####################################
+# TAF IN UNICODE ############# UPDATE
 
 tafline = '' 
 totaltaf = ''
 for tafline in extractedtaf.strings:          #breaks into strings & saves formatted taf to variable
     totaltaf += (tafline + '''
           ''')                                #weird.. todo: fix
-
-
-n='testbed.xlsx'                                     #variable for excel file name - exists in source folder
-excelfile = openpyxl.load_workbook(n)                #load excel writer
-sheet = excelfile.get_sheet_by_name('Sheet1')        #opens active work bed sheet    
-sheet['A1'] = (totalicaoname)  
-sheet['A2'] = (totaltaf)                             #writes taf variable to specific shell in sheet
-excelfile.save(n)                                    #saves the sheet
-
 
 
 #####################################
@@ -109,8 +104,14 @@ init = np.array(init, dtype = np.int64)
 froms = np.array(froms, dtype = np.int64)
 time = becomings + tempos + init + froms
 
+#####################################
+# CYCLE THROUGH TAF
+
 for i, line in enumerate(linetaf):
     splitline = re.split(r'\s+', line)
+
+# WIND GROUPS
+
     for j,group in enumerate(splitline):
         if group.endswith('KT'):                       #check wind groups
             if group.startswith('WS'):                   #pull out wind shear
@@ -130,11 +131,23 @@ for i, line in enumerate(linetaf):
                 elif wind >= 50:
                     print('From {0}:'.format(time[i]))
                     print('HAZARD: SFC WIND >50KT')
+    
+#####################################
+# WRITE TO EXCEL FILE ############# UPDATE                
+                    
+n='testbed.xlsx'                                     #variable for excel file name - exists in source folder
+excelfile = openpyxl.load_workbook(n)                #load excel writer
+sheet = excelfile.get_sheet_by_name('Sheet1')        #opens active work bed sheet    
+sheet['A1'] = (totalicaoname)  
+sheet['A2'] = (totaltaf)                             #writes taf variable to specific shell in sheet
+excelfile.save(n)                                    #saves the sheet
 
+#####################################
+# BLOCK OF PRINT STATEMENTS 
 
 #print(linetaf)
 #print(totalicaoname) 
-print(totaltaf)                                     #print for peace of mind
+print(totaltaf)                                     #USE TO NOT GO CRAZY
 #print(type(totaltaf))
 #print(stringtaf)
 #print(type(stringtaf))
