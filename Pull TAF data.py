@@ -82,7 +82,8 @@ linesoftaf = 0
 for i,line in enumerate(linetaf):
     
     #time groups
-    linesoftaf += 1.
+    linesoftaf += 1
+
     if re.findall(r'(?<=FM)\d{6}',line):    
         froms += re.findall(r'(?<=FM)\d{6}',line)
     else:
@@ -111,8 +112,10 @@ init = np.array(init, dtype = np.int64)
 froms = np.array(froms, dtype = np.int64)
 time = becomings + tempos + init + froms
 
+
 #####################################
 # CYCLE THROUGH TAF
+
 timeend = 'End of TAF Period'
 for i, line in enumerate(linetaf):
     splitline = re.split(r'\s+', line)
@@ -121,6 +124,7 @@ for i, line in enumerate(linetaf):
        timestart = temposstart[i]
        timeend = tempos[i]
     else:
+        timeend = 'End of TAF Period'
         while i != (linesoftaf-1):
             timeend = time[i+1]
             break
@@ -146,16 +150,16 @@ for i, line in enumerate(linetaf):
                     print('From {0} to {1}: HAZARD: SFC WIND >50KT'.format(timestart,timeend))
                     
 #VIS GROUP - M and SM  
-                  
+    vis = 9999              
     for j, group in enumerate(splitline):
-         if len(group) == 4 and re.findall(r'\d{4}',group):
+         if len(group) == 4 and re.findall(r'\d{4}',group) and j<6:
             vis = int(group)
-            if vis <=5000 and vis >1600:
-                print('From {0} to {1}: HAZARD: 3SM > VIS > 5SM:'.format(timestart,timeend))
-            elif vis<=1600 and vis > 800:
-                print('From {0} to {1}: HAZARD: 1SM > VIS > 3SM:'.format(timestart,timeend))
-            elif vis <=800:
-                print('From {0} to {1}: HAZARD: VIS < 1SM:'.format(timestart,timeend))
+            if vis <=8000 and vis >4800:
+                print('From {0} to {1}: HAZARD: 3SM < VIS < 5SM'.format(timestart,timeend))
+            elif vis<=4800 and vis > 1600:
+                print('From {0} to {1}: HAZARD: 1SM < VIS < 3SM'.format(timestart,timeend))
+            elif vis <=1600:
+                print('From {0} to {1}: HAZARD: VIS < 1SM'.format(timestart,timeend))
          elif (len(group) == 3 or len(group) == 5 or len(group) == 6) and re.findall(r'SM', group):
              vis = group
              if splitline[j-1] == '1':
@@ -165,9 +169,9 @@ for i, line in enumerate(linetaf):
              ifr = dict([('1SM', 0),('1 1/8SM', 1), ('1 1/4SM', 2), ('1 3/8SM', 3), ('1 1/2SM', 4), ('1 5/8SM', 5), ('1 3/4SM', 6), ('1 7/8SM', 7), ('2SM', 8), ('2 1/4SM', 9), ('2 1/2', 10), ('2 3/4SM', 11)])
              lifr = dict([('0SM', 90),('1/16SM', 91), ('1/8SM', 92), ('3/16SM', 93), ('1/4SM', 94), ('5/16SM', 95), ('3/8SM', 96), ('1/2SM', 97), ('5/8SM', 98), ('3/4SM', 99), ('7/8', 910), ('1SM', 911)])
              if vis == '5SM' or vis == '4SM' or vis == '3SM':
-                print('From {0} to {1}: HAZARD: 3SM > VIS > 5SM:'.format(timestart,timeend))
+                print('From {0} to {1}: HAZARD: 3SM < VIS < 5SM'.format(timestart,timeend))
              elif vis in ifr:
-                print('From {0} to {1}: HAZARD: 1SM > VIS > 3SM:'.format(timestart,timeend))
+                print('From {0} to {1}: HAZARD: 1SM < VIS < 3SM'.format(timestart,timeend))
              elif vis in lifr:
                 print('From {0} to {1}: HAZARD: VIS < 1SM'.format(timestart,timeend))
                  
@@ -199,3 +203,4 @@ print(totaltaf)                                     #USE TO NOT GO CRAZY
 #print(tempos)
 #print(temposstart)
 #print(time)
+#print linesoftaf
